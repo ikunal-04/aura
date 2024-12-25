@@ -1,82 +1,69 @@
-'use client';
-import { useEffect, useState } from 'react';
-import ConnectWallett from '@/components/ConnectWallet';
+'use client'
 
-const AnimatedBackground = () => {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Input } from "@/components/ui/input"
+import { BrowserWindow } from '@/components/BrowserWindow'
+import { RetroButton } from '@/components/RetroButton'
+import ConnectWallett from '@/components/ConnectWallet'
 
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({
-        x: (e.clientX / window.innerWidth) * 2 - 1,
-        y: (e.clientY / window.innerHeight) * 2 - 1
-      });
-    };
+export default function LandingPage() {
+  const [address, setAddress] = useState<string>('')
+  const router = useRouter()
 
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+  const handleCheckScore = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (address) {
+      const trimmedAddress = address.trim()
+      router.push(`/base/points?address=${trimmedAddress}`)
+    }
+  }
 
   return (
-    <div className="fixed inset-0 -z-10">
-      {/* Main gradient orbs */}
-      <div 
-        className="absolute top-1/4 -left-1/4 w-96 h-96 bg-purple-500/30 rounded-full blur-3xl animate-pulse"
-        style={{
-          transform: `translate(${mousePosition.x * 20}px, ${mousePosition.y * 20}px)`,
-        }}
-      />
-      <div 
-        className="absolute bottom-1/4 -right-1/4 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl animate-pulse"
-        style={{
-          animationDelay: '1s',
-          transform: `translate(${mousePosition.x * -20}px, ${mousePosition.y * -20}px)`,
-        }}
-      />
-      
-      {/* Additional smaller orbs */}
-      <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl animate-pulse"
-        style={{ animationDelay: '1.5s' }}
-      />
-      <div className="absolute bottom-1/3 right-1/3 w-48 h-48 bg-violet-500/20 rounded-full blur-3xl animate-pulse"
-        style={{ animationDelay: '2s' }}
-      />
+    <div className="min-h-screen bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#1a1a2e] p-4">
+      <div className="max-w-4xl mx-auto pt-20">
+        <div className="text-center mb-12">
+          <h1 className="text-7xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+            bro&apos;s onchain aura is...?
+          </h1>
+          <p className="text-xl text-gray-400">
+            Check your on-chain reputation score and unlock new possibilities
+          </p>
+        </div>
 
-      {/* Subtle grid overlay */}
-      <div 
-        className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:100px_100px]"
-        style={{
-          backgroundPosition: `${mousePosition.x * 5}px ${mousePosition.y * 5}px`
-        }}
-      />
+        <BrowserWindow title="AURA.CHECKER">
+          <div className="bg-[#1a1a2e] p-8">
+            <div className="max-w-md mx-auto space-y-6">
+              <div className="space-y-2">
+                <h2 className="text-2xl font-bold text-purple-400">
+                  Aura
+                </h2>
+                <p className="text-gray-400">
+                  Connect your Base wallet or enter an address to check your score
+                </p>
+              </div>
 
-      {/* Dark overlay to ensure content readability */}
-      <div className="absolute inset-0 bg-black/70" />
-    </div>
-  );
-};
-
-export default function Home() {
-  return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center bg-black text-white overflow-hidden">
-      <AnimatedBackground />
-      
-      {/* Hero text */}
-      <div className="absolute top-10 text-center">
-        <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-          Welcome to Aura
-        </h1>
-        <p className="text-lg text-gray-400 max-w-xl mx-auto px-4">
-          Check your on-chain reputation score and unlock new possibilities
-        </p>
-      </div>
-
-      <ConnectWallett />
-      
-      {/* Footer */}
-      <div className="absolute bottom-6 text-gray-500 text-sm">
-        Powered by blockchain technology
+              <form onSubmit={handleCheckScore} className="space-y-4">
+                <div className="flex gap-2">
+                  <Input
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder="0xABC..."
+                    className="flex-1 bg-[#16213e] border-2 border-purple-400/50 text-white placeholder-gray-500"
+                  />
+                  <RetroButton type="submit" variant="primary">
+                    Check Score
+                  </RetroButton>
+                </div>
+              </form>
+              
+              <div className="text-center">
+                <ConnectWallett />
+              </div>
+            </div>
+          </div>
+        </BrowserWindow>
       </div>
     </div>
-  );
+  )
 }
