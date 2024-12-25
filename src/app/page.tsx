@@ -1,34 +1,69 @@
 'use client'
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 
-export default function Home() {
-  const [address, setAddress] = useState('');
-  const router = useRouter();
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Input } from "@/components/ui/input"
+import { BrowserWindow } from '@/components/BrowserWindow'
+import { RetroButton } from '@/components/RetroButton'
+import ConnectWallett from '@/components/ConnectWallet'
 
-  const handleCheckScore = () => {
-    if (!address) return;
-    router.push(`/dashboard?address=${address}`);
-  };
+export default function LandingPage() {
+  const [address, setAddress] = useState<string>('')
+  const router = useRouter()
+
+  const handleCheckScore = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (address) {
+      const trimmedAddress = address.trim()
+      router.push(`/base/points?address=${trimmedAddress}`)
+    }
+  }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-1000 text-white">
-      <h1 className="text-5xl font-bold mb-4">Aura</h1>
-      <p className="mb-8 text-lg text-gray-400">Enter your wallet address to see your Aura Score</p>
+    <div className="min-h-screen bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#1a1a2e] p-4">
+      <div className="max-w-4xl mx-auto pt-20">
+        <div className="text-center mb-12">
+          <h1 className="text-7xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+            bro&apos;s onchain aura is...?
+          </h1>
+          <p className="text-xl text-gray-400">
+            Check your on-chain reputation score and unlock new possibilities
+          </p>
+        </div>
 
-      <input
-        type="text"
-        placeholder="0xABC..."
-        value={address}
-        onChange={(e) => setAddress(e.target.value)}
-        className="p-3 mb-4 text-black rounded-lg w-64"
-      />
-      <button
-        onClick={handleCheckScore}
-        className="bg-purple-600 px-6 py-3 rounded-lg hover:bg-purple-700"
-      >
-        Check My Score
-      </button>
+        <BrowserWindow title="AURA.CHECKER">
+          <div className="bg-[#1a1a2e] p-8">
+            <div className="max-w-md mx-auto space-y-6">
+              <div className="space-y-2">
+                <h2 className="text-2xl font-bold text-purple-400">
+                  Aura
+                </h2>
+                <p className="text-gray-400">
+                  Connect your Base wallet or enter an address to check your score
+                </p>
+              </div>
+
+              <form onSubmit={handleCheckScore} className="space-y-4">
+                <div className="flex gap-2">
+                  <Input
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder="0xABC..."
+                    className="flex-1 bg-[#16213e] border-2 border-purple-400/50 text-white placeholder-gray-500"
+                  />
+                  <RetroButton type="submit" variant="primary">
+                    Check Score
+                  </RetroButton>
+                </div>
+              </form>
+              
+              <div className="text-center">
+                <ConnectWallett />
+              </div>
+            </div>
+          </div>
+        </BrowserWindow>
+      </div>
     </div>
-  );
+  )
 }
