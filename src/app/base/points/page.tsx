@@ -26,7 +26,15 @@ export default function RetroAuraWebsite() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const newScore = Math.floor(Math.random() * 100)
-    setAuraScore(newScore)
+    // call api to get aura score
+    // api is added in src/api/lookup/[address].ts in this nextjs project only
+    const response = fetch(`/api/lookup?address=${inputValue}`)
+    if (!!response) {
+      setAuraScore(newScore)
+      return
+    }
+    console.log({response})
+    setAuraScore(response)
   }
 
   return (
