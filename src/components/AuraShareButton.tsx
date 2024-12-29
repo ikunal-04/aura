@@ -1,6 +1,6 @@
 // components/AuraShareButton.tsx
 
-import React, { useRef } from 'react';
+import React from 'react';
 import html2canvas from 'html2canvas';
 
 
