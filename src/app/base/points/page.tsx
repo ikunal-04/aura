@@ -13,8 +13,9 @@ import { RetroLoader } from '@/components/RetroLoader'
 import { AuraBurst } from '@/components/AuraBurst'
 import { Footer } from '@/components/Footer'
 import AuraShareButton from '@/components/AuraShareButton'
+import { Suspense } from 'react'
 
-export default function RetroAuraWebsite() {
+function RetroAuraWebsite() {
   const scoreRef = useRef<HTMLDivElement | null>(null)
   const searchParams = useSearchParams()
   const address = searchParams.get('address')
@@ -286,5 +287,13 @@ export default function RetroAuraWebsite() {
       </div>
       <Footer />
     </div>
+  )
+}
+
+export default function RetroAuraWebsiteWrapper() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <RetroAuraWebsite />
+    </Suspense>
   )
 }

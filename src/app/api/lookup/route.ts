@@ -243,7 +243,7 @@ function analyzeTransactions(txResponse: Transaction[]) {
   let failCount = 0;
   let defiTxCount = 0;
   let contractDeployCount = 0;
-  let timestamps: number[] = [];
+  const timestamps: number[] = [];
 
   for (const tx of transactions) {
     totalTxCount++;
