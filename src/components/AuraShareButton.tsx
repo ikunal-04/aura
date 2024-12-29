@@ -1,7 +1,8 @@
 // components/AuraShareButton.tsx
 
-import React, { useRef } from 'react';
+import React from 'react';
 import html2canvas from 'html2canvas';
+import { RetroButton } from '@/components/RetroButton';
 
 
 interface AuraShareButtonProps {
@@ -109,9 +110,9 @@ const AuraShareButton: React.FC<AuraShareButtonProps> = ({ auraScore, divRef, us
 
   return (
     <div style={{ border: '1px solid #ccc', padding: '3px' }}>
-      <button onClick={handleShare}>
+      <RetroButton onClick={handleShare}>
         Share on X
-      </button>
+      </RetroButton>
     </div>
   );
 };

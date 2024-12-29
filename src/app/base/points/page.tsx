@@ -25,6 +25,7 @@ export default function RetroAuraWebsite() {
   const loadingAudioRef = useRef<HTMLAudioElement | null>(null)
   const completionAudioRef = useRef<HTMLAudioElement | null>(null)
   const [isPlayingLoadingSound, setIsPlayingLoadingSound] = useState<boolean>(false)
+  const audioPromiseRef = useRef<Promise<void> | null>(null)
 
   // Initialize audio on component mount
   useEffect(() => {
@@ -58,24 +59,41 @@ export default function RetroAuraWebsite() {
       try {
         setIsPlayingLoadingSound(true)
         loadingAudioRef.current.currentTime = 0
+        audioPromiseRef.current = loadingAudioRef.current.play()
         await loadingAudioRef.current.play()
       } catch (error) {
-        console.error('Audio playback failed:', error)
+        if ((error as Error).name !== 'AbortError') {
+          console.error('Audio playback failed:', error)
+        }
         setIsPlayingLoadingSound(false)
+      }
+    }
+  }
+
+  const stopLoadingSound = async () => {
+    if (loadingAudioRef.current && isPlayingLoadingSound) {
+      try {
+        // Wait for any pending play promise to resolve before pausing
+        if (audioPromiseRef.current) {
+          await audioPromiseRef.current
+        }
+        loadingAudioRef.current.pause()
+        loadingAudioRef.current.currentTime = 0
+        setIsPlayingLoadingSound(false)
+      } catch (error) {
+        if ((error as Error).name !== 'AbortError') {
+          console.error('Error stopping loading sound:', error)
+        }
       }
     }
   }
 
   const playCompletionSound = async () => {
     try {
-      // Safely stop loading sound if it's playing
-      if (loadingAudioRef.current && isPlayingLoadingSound) {
-        loadingAudioRef.current.pause()
-        loadingAudioRef.current.currentTime = 0
-        setIsPlayingLoadingSound(false)
-      }
+      // Stop loading sound first
+      await stopLoadingSound()
       
-      // Wait a brief moment before playing completion sound
+      // Small delay to ensure clean transition
       await new Promise(resolve => setTimeout(resolve, 100))
       
       if (completionAudioRef.current) {
@@ -83,9 +101,12 @@ export default function RetroAuraWebsite() {
         await completionAudioRef.current.play()
       }
     } catch (error) {
-      console.error('Completion audio playback failed:', error)
+      if ((error as Error).name !== 'AbortError') {
+        console.error('Completion audio playback failed:', error)
+      }
     }
   }
+
 
   // Update URL when input changes
   const updateURL = (value: string) => {
@@ -109,22 +130,22 @@ export default function RetroAuraWebsite() {
     
     setIsLoading(true)
     setShowConfetti(false)
-    await playLoadingSound() // Play sound when calculation starts
+    await playLoadingSound()
     
     try {
       const response = await fetch(`/api/lookup?address=${value}`)
       const data = await response.json()
       
       if (data) {
-        // keep aura score to whole number
         setAuraScore(Math.round(data.auraScore))
-        await playCompletionSound() // Play sound when calculation completes
+        await playCompletionSound()
         setShowConfetti(true)
         setTimeout(() => setShowConfetti(false), 5000)
       }
     } catch (err) {
       console.error(err)
       setAuraScore(null)
+      await stopLoadingSound()
     } finally {
       setIsLoading(false)
     }
