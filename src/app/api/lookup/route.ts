@@ -424,6 +424,10 @@ async function getAuraScore(userAddress: string): Promise<number> {
       analyzeTokens(tokenBalances),
       analyzeTransactions(transactions)
     ]);
+
+    console.log("Portfolio analysis:", portfolioResult);
+    console.log("Token analysis:", tokenResult);
+    console.log("Transaction analysis:", transactionResult);
   
     // Combine or weight them however you like:
     const auraScore = computeTxFrequencyScore(transactionResult.averageTimeGapDays)
