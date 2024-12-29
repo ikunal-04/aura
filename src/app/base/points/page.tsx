@@ -20,21 +20,68 @@ export default function RetroAuraWebsite() {
   const [auraScore, setAuraScore] = useState<number | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [showConfetti, setShowConfetti] = useState(false)
-  const audioRef = useRef<HTMLAudioElement | null>(null)
+  const loadingAudioRef = useRef<HTMLAudioElement | null>(null)
+  const completionAudioRef = useRef<HTMLAudioElement | null>(null)
+  const [isPlayingLoadingSound, setIsPlayingLoadingSound] = useState<boolean>(false)
 
   // Initialize audio on component mount
   useEffect(() => {
-    audioRef.current = new Audio('/sound.mp4') 
-    audioRef.current.load()
+    loadingAudioRef.current = new Audio('/loadingSound.mp4') 
+    completionAudioRef.current = new Audio('/burstSound.mp4') 
+
+    loadingAudioRef.current.addEventListener('ended', () => {
+      setIsPlayingLoadingSound(false)
+    })
+
+    loadingAudioRef.current.load()
+    completionAudioRef.current.load()
+
+    return () => {
+      if (loadingAudioRef.current) {
+        loadingAudioRef.current.removeEventListener('ended', () => {
+          setIsPlayingLoadingSound(false)
+        })
+        loadingAudioRef.current.pause()
+        loadingAudioRef.current.currentTime = 0
+      }
+      if (completionAudioRef.current) {
+        completionAudioRef.current.pause()
+        completionAudioRef.current.currentTime = 0
+      }
+    }
   }, [])
 
-  // Play sound function
-  const playCalculateSound = () => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = 0
-      audioRef.current.play().catch(error => {
+  const playLoadingSound = async () => {
+    if (loadingAudioRef.current && !isPlayingLoadingSound) {
+      try {
+        setIsPlayingLoadingSound(true)
+        loadingAudioRef.current.currentTime = 0
+        await loadingAudioRef.current.play()
+      } catch (error) {
         console.error('Audio playback failed:', error)
-      })
+        setIsPlayingLoadingSound(false)
+      }
+    }
+  }
+
+  const playCompletionSound = async () => {
+    try {
+      // Safely stop loading sound if it's playing
+      if (loadingAudioRef.current && isPlayingLoadingSound) {
+        loadingAudioRef.current.pause()
+        loadingAudioRef.current.currentTime = 0
+        setIsPlayingLoadingSound(false)
+      }
+      
+      // Wait a brief moment before playing completion sound
+      await new Promise(resolve => setTimeout(resolve, 100))
+      
+      if (completionAudioRef.current) {
+        completionAudioRef.current.currentTime = 0
+        await completionAudioRef.current.play()
+      }
+    } catch (error) {
+      console.error('Completion audio playback failed:', error)
     }
   }
 
@@ -60,7 +107,7 @@ export default function RetroAuraWebsite() {
     
     setIsLoading(true)
     setShowConfetti(false)
-    playCalculateSound() // Play sound when calculation starts
+    await playLoadingSound() // Play sound when calculation starts
     
     try {
       const response = await fetch(`/api/lookup?address=${value}`)
@@ -68,6 +115,7 @@ export default function RetroAuraWebsite() {
       
       if (data) {
         setAuraScore(data.auraScore)
+        await playCompletionSound() // Play sound when calculation completes
         setShowConfetti(true)
         setTimeout(() => setShowConfetti(false), 5000)
       }
