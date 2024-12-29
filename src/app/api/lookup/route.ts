@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Filename: app/api/hello/route.ts
 
 import { NextRequest, NextResponse } from "next/server";
@@ -413,29 +414,34 @@ function computeTxCountScore(txCount: number, defiTxCount: number) {
 
 
 async function getAuraScore(userAddress: string): Promise<number> {
-
-  const [portfolio, tokenBalances, transactions] = await Promise.all([
-    getWalletsPortfolio(userAddress),
-    getTokenBalances(userAddress),
-    getTransactions(userAddress)
-  ]);
-
-  const [portfolioResult, tokenResult, transactionResult] = await Promise.all([
-    analyzePortfolio(portfolio?.data.attributes),
-    analyzeTokens(tokenBalances),
-    analyzeTransactions(transactions)
-  ]);
-
-  // Combine or weight them however you like:
-  const auraScore = computeTxFrequencyScore(transactionResult.averageTimeGapDays)
-    + computeTxCountScore(transactionResult.successCount, transactionResult.defiTxCount)
-    + computeTokenScore(tokenResult)
-    + computePortfolioScore(portfolioResult);
-
-  console.log("Aura score:", auraScore);
-
-  console.log('Hello World');
-  return auraScore;
+  try {
+    const [portfolio, tokenBalances, transactions] = await Promise.all([
+      getWalletsPortfolio(userAddress),
+      getTokenBalances(userAddress),
+      getTransactions(userAddress)
+    ]);
+  
+    const [portfolioResult, tokenResult, transactionResult] = await Promise.all([
+      analyzePortfolio(portfolio?.data.attributes),
+      analyzeTokens(tokenBalances),
+      analyzeTransactions(transactions)
+    ]);
+  
+    // Combine or weight them however you like:
+    const auraScore = computeTxFrequencyScore(transactionResult.averageTimeGapDays)
+      + computeTxCountScore(transactionResult.successCount, transactionResult.defiTxCount)
+      + computeTokenScore(tokenResult)
+      + computePortfolioScore(portfolioResult);
+  
+    console.log("Aura score:", auraScore);
+  
+    console.log('Hello World');
+    return auraScore;
+    
+  } catch (error) {
+    console.error("Error in getAuraScore: ", error);
+    return 0;
+  }
 }
 
 async function requestHandler(_request: NextRequest): Promise<NextResponse> {

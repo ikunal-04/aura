@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Input } from "@/components/ui/input"
 import { BrowserWindow } from '@/components/BrowserWindow'
@@ -9,44 +9,121 @@ import { AuraEffect } from './components/AuraEffect'
 import { MemeBrowser } from './components/MemeBrowser'
 import { motion, AnimatePresence } from 'framer-motion'
 import ConnectWallett from '@/components/ConnectWallet'
+import { RetroLoader } from '@/components/RetroLoader'
+import { AuraBurst } from '@/components/AuraBurst'
+import { Footer } from '@/components/Footer'
 
 export default function RetroAuraWebsite() {
   const searchParams = useSearchParams()
   const address = searchParams.get('address')
   const [inputValue, setInputValue] = useState(address || '')
   const [auraScore, setAuraScore] = useState<number | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [showConfetti, setShowConfetti] = useState(false)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
 
+  // Initialize audio on component mount
+  useEffect(() => {
+    audioRef.current = new Audio('/sound.mp4') 
+    audioRef.current.load()
+  }, [])
+
+  // Play sound function
+  const playCalculateSound = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0
+      audioRef.current.play().catch(error => {
+        console.error('Audio playback failed:', error)
+      })
+    }
+  }
+
+  // Update URL when input changes
+  const updateURL = (value: string) => {
+    const newURL = value 
+      ? `${window.location.pathname}?address=${encodeURIComponent(value)}`
+      : window.location.pathname
+    
+    window.history.pushState({}, '', newURL)
+  }
+
+  // Handle input change
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value
+    setInputValue(newValue)
+    updateURL(newValue)
+  }
+
+  // Calculate aura function
+  const calculateAura = async (value: string) => {
+    if (!value) return
+    
+    setIsLoading(true)
+    setShowConfetti(false)
+    playCalculateSound() // Play sound when calculation starts
+    
+    try {
+      const response = await fetch(`/api/lookup?address=${value}`)
+      const data = await response.json()
+      
+      if (data) {
+        setAuraScore(data.auraScore)
+        setShowConfetti(true)
+        setTimeout(() => setShowConfetti(false), 5000)
+      }
+    } catch (err) {
+      console.error(err)
+      setAuraScore(null)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+  
   useEffect(() => {
     if (address) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      handleSubmit(new Event('submit') as any)
+      calculateAura(address)
+    }
+  }, [])
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const params = new URLSearchParams(window.location.search)
+      const newAddress = params.get('address') || ''
+      setInputValue(newAddress)
+      if (newAddress) {
+        calculateAura(newAddress)
+      }
+    }
+
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [])
+
+  useEffect(() => {
+    if (address !== inputValue) {
+      setInputValue(address || '')
+      if (address) {
+        calculateAura(address)
+      }
     }
   }, [address])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const newScore = Math.floor(Math.random() * 100)
-    // call api to get aura score
-    // api is added in src/api/lookup/[address].ts in this nextjs project only
-    const response = fetch(`/api/lookup?address=${inputValue}`)
-    if (!!response) {
-      setAuraScore(newScore)
-      return
-    }
-    console.log({response})
-    setAuraScore(response)
+    calculateAura(inputValue)
   }
 
+  // Rest of the component remains the same...
   return (
     <div className="relative min-h-screen bg-[#1a1a2e] p-4">
+      <AuraBurst show={showConfetti} />
       {auraScore !== null && <AuraEffect score={auraScore} />}
 
       <div className="absolute top-4 right-4 z-10">
-      <ConnectWallett />
+        <ConnectWallett />
       </div>
       
-      <div className="max-w-5xl mx-auto grid gap-4 pt-16">
-        {/* Main Input Window */}
+      <div className="max-w-5xl mx-auto grid gap-4 pt-16 flex-gorw mb-6">
         <BrowserWindow title="AURA.ANALYZER/INPUT" variant="dark">
           <div className="bg-[#16213e] p-6">
             <div className="text-center mb-8">
@@ -62,21 +139,27 @@ export default function RetroAuraWebsite() {
               <div className="bg-[#1a1a2e] border border-purple-400/50 p-4">
                 <Input
                   value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
+                  onChange={handleInputChange}
                   placeholder="What's your current vibe?"
                   className="w-full border-2 border-purple-400/50 bg-[#16213e] px-3 py-2 text-white placeholder-gray-500 focus:border-purple-500 focus:ring-0"
                 />
               </div>
-              <RetroButton type="submit" className="w-full" variant="primary">
-                Calculate Aura Power
+              <RetroButton type="submit" className="w-full" variant="primary" disabled={isLoading}>
+                {isLoading ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <RetroLoader />
+                    <span>Calculating Aura...</span>
+                  </div>
+                ) : (
+                  'Calculate Aura Power'
+                )}
               </RetroButton>
             </form>
           </div>
         </BrowserWindow>
 
-        {/* Results and Meme Windows */}
         <AnimatePresence>
-          {auraScore !== null && (
+          {auraScore !== null && !isLoading && (
             <>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -91,7 +174,7 @@ export default function RetroAuraWebsite() {
                         {auraScore >= 70 ? 'STRONG AURA' : 'WEAK AURA'}
                       </h2>
                       <div className="text-4xl font-bold text-gray-300">
-                        +{auraScore * 25} AURA POINTS
+                        +{auraScore} AURA POINTS
                       </div>
                       <div className="h-6 bg-[#1a1a2e] border-2 border-purple-400/50 rounded-full overflow-hidden">
                         <div 
@@ -140,7 +223,7 @@ export default function RetroAuraWebsite() {
           )}
         </AnimatePresence>
       </div>
+      <Footer />
     </div>
   )
 }
-

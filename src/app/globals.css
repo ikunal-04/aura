@@ -6,6 +6,12 @@ body {
   font-family: 'Courier New', Courier, monospace;
 }
 
+@layer utilities {
+  .animate-typing {
+    animation: typing 3s steps(40) infinite;
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -99,6 +105,10 @@ body {
 
 .animate-float {
   animation: float 8s ease-in-out infinite;
+}
+
+.animate-typing {
+  animation: typing 3s steps(40) infinite;
 }
 
 /* Custom scrollbar for the retro feel */
