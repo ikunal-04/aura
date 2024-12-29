@@ -299,7 +299,10 @@ function analyzeTransactions(txResponse: Transaction[]) {
     : 0;
 
   // Convert milliseconds to days (for demonstration)
-  const avgGapDays = avgGapMillis / (1000 * 60 * 60 * 24);
+  let avgGapDays = avgGapMillis / (1000 * 60 * 60 * 24);
+  if(!avgGapDays){
+    avgGapDays = 0;
+  }
 
   // 5) Return analysis
   return {
