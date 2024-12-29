@@ -20,6 +20,16 @@ export function Footer() {
               </li>
               <li>
                 <a
+                  href="https://onchainkit.xyz/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-purple-400 transition-colors flex items-center gap-1"
+                >
+                  OnchainKit <ExternalLink size={14} />
+                </a>
+              </li>
+              <li>
+                <a
                   href="https://developers.moralis.com/"
                   target="_blank"
                   rel="noopener noreferrer"
