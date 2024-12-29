@@ -37,7 +37,7 @@ const AuraShareButton: React.FC<AuraShareButtonProps> = ({ auraScore, divRef, us
   async function pinFileToIPFS(fileData: string, filename: string): Promise<string> {
     try {
       // fileData is base64 encoded image data
-      
+
       console.log('Pinning to IPFS...', filename);
       const blob = dataUrlToBlob(fileData);
       const data = new FormData();
@@ -87,11 +87,12 @@ const AuraShareButton: React.FC<AuraShareButtonProps> = ({ auraScore, divRef, us
       link.click();
 
       // 3) Prepare the tweet text
-      const tweetText = `I just tested my new Aura Score: ${auraScore}! 
-        Check out on @AuraChecker:
-        ${imgUrl}
+      const tweetText = `This is my onchain Aura: ${auraScore}! XD
+        
+Check out on @onchainaura_fun:
+${imgUrl}
 
-        Check your own score at https://aura-checker.vercel.app/
+Check your own score at https://www.onchainaura.fun
         `;
 
 
