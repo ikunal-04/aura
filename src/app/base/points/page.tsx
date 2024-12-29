@@ -12,8 +12,10 @@ import ConnectWallett from '@/components/ConnectWallet'
 import { RetroLoader } from '@/components/RetroLoader'
 import { AuraBurst } from '@/components/AuraBurst'
 import { Footer } from '@/components/Footer'
+import AuraShareButton from '@/components/AuraShareButton'
 
 export default function RetroAuraWebsite() {
+  const scoreRef = useRef<HTMLDivElement | null>(null)
   const searchParams = useSearchParams()
   const address = searchParams.get('address')
   const [inputValue, setInputValue] = useState(address || '')
@@ -114,7 +116,8 @@ export default function RetroAuraWebsite() {
       const data = await response.json()
       
       if (data) {
-        setAuraScore(data.auraScore)
+        // keep aura score to whole number
+        setAuraScore(Math.round(data.auraScore))
         await playCompletionSound() // Play sound when calculation completes
         setShowConfetti(true)
         setTimeout(() => setShowConfetti(false), 5000)
@@ -170,16 +173,24 @@ export default function RetroAuraWebsite() {
       <div className="absolute top-4 right-4 z-10">
         <ConnectWallett />
       </div>
-      
-      <div className="max-w-5xl mx-auto grid gap-4 pt-16 flex-gorw mb-6">
-        <BrowserWindow title="AURA.ANALYZER/INPUT" variant="dark">
-          <div className="bg-[#16213e] p-6">
-            <div className="text-center mb-8">
-              <h1 className="text-2xl font-bold text-purple-400 mb-2 uppercase tracking-widest">
+
+      {
+        auraScore !== null && scoreRef !== null && (
+          <div className="absolute top-20 right-4 z-10">
+            <AuraShareButton auraScore={auraScore} divRef={scoreRef} userAddress={inputValue} />
+          </div>
+        )
+      }
+      <h1 className="text-2xl font-bold text-purple-400 flex justify-center uppercase tracking-widest">
                 Aura Analyzer v1.0
               </h1>
+      <div className="max-w-5xl mx-auto grid gap-4 pt-4 flex-gorw mb-6">
+        <BrowserWindow title="AURA.ANALYZER/INPUT" variant="dark">
+          <div className="bg-[#16213e] p-6">
+            <div className="text-center mb-4">
+              
               <div className="bg-purple-400/10 border border-purple-400/50 p-2 text-sm text-gray-300">
-                Type your vibe to calculate your aura power level
+                Enter your address to find your Aura
               </div>
             </div>
 
@@ -206,6 +217,7 @@ export default function RetroAuraWebsite() {
           </div>
         </BrowserWindow>
 
+        <div className='bg-[#1a1a2e]' ref={scoreRef}>
         <AnimatePresence>
           {auraScore !== null && !isLoading && (
             <>
@@ -240,7 +252,7 @@ export default function RetroAuraWebsite() {
                 </BrowserWindow>
               </motion.div>
 
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-2 gap-4 mt-4">
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -270,6 +282,7 @@ export default function RetroAuraWebsite() {
             </>
           )}
         </AnimatePresence>
+        </div>
       </div>
       <Footer />
     </div>

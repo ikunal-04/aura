@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { BrowserWindow } from '@/components/BrowserWindow'
 import { RetroButton } from '@/components/RetroButton'
 import ConnectWallett from '@/components/ConnectWallet'
+import { Footer } from '@/components/Footer'
 
 export default function LandingPage() {
   const [address, setAddress] = useState<string>('')
@@ -24,10 +25,10 @@ export default function LandingPage() {
       <div className="max-w-4xl mx-auto pt-20">
         <div className="text-center mb-12">
           <h1 className="text-7xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-            bro&apos;s onchain aura is...?
+            get your BASED AURA
           </h1>
           <p className="text-xl text-gray-400">
-            Check your on-chain reputation score and unlock new possibilities
+          Discover Your Aura Score based on your onchain journey
           </p>
         </div>
 
@@ -63,6 +64,10 @@ export default function LandingPage() {
             </div>
           </div>
         </BrowserWindow>
+        
+      </div>
+      <div className='mt-4'>
+        <Footer />
       </div>
     </div>
   )
