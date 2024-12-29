@@ -31,9 +31,7 @@ function analyzeTokens(tokenBalances: TokenBalance[]) {
   let sumSecurityScore = 0;           // Sum of security scores for averaging
   let countSecurityScore = 0;         // Track how many tokens have a valid security_score
   let largeHoldingCount = 0;          // # tokens where user holds > X% of total supply
-  let totalBalanceUSD = 0;            // If you had a price feed, you could compute approximate USD.
-  let sortedTokenBalances;
-  let largeHoldinTokens: TokenBalance[] = [];
+  const largeHoldinTokens: TokenBalance[] = [];
   
   // For demonstration, we assume you'll handle token prices separately.
   // If you have the user’s total holdings in USD, you can incorporate it.
@@ -71,7 +69,7 @@ function analyzeTokens(tokenBalances: TokenBalance[]) {
     // by the token price to estimate USD value.
     // For now, we set totalBalanceUSD = 0 or do a placeholder:
     // totalBalanceUSD += getTokenPrice(token_address) * (balance in base units)
-    const balanceInDecimal = Number(token.balance) / Math.pow(10, token.decimals);
+    // const balanceInDecimal = Number(token.balance) / Math.pow(10, token.decimals);
     // get top 5 balance tokens
   }
 
@@ -95,7 +93,7 @@ function analyzeTokens(tokenBalances: TokenBalance[]) {
     verifiedTokenCount,
     avgSecurityScore,
     largeHoldingCount,
-    largeHoldinTokens,
+    largeHoldinTokens
     // totalBalanceUSD, // if implemented
   };
 }
@@ -324,8 +322,8 @@ async function getTransactions(userAddress: string): Promise<Transaction[]> {
     const transactions: Transaction[] = [];
     let hasMore = true;
     let lastTransactionTime = Date.now();
-    let lastYear = 2024;
-    let blockAtLastYear = 8638927;
+    const lastYear = 2024;
+    // let blockAtLastYear = 8638927;
     while (hasMore) {
       const url = `https://api.basescan.org/api?module=account&action=txlist&address=${userAddress}&startblock=0&endblock=99999999&page=${page}&offset=${offset}&sort=desc&apikey=7CKA9EHPB4C4PFPAX77XSWNJZBBPA5EXQT`
       const response = await fetch(url);
