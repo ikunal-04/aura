@@ -331,7 +331,12 @@ async function getTransactions(userAddress: string): Promise<Transaction[]> {
       const url = `https://api.basescan.org/api?module=account&action=txlist&address=${userAddress}&startblock=0&endblock=99999999&page=${page}&offset=${offset}&sort=desc&apikey=7CKA9EHPB4C4PFPAX77XSWNJZBBPA5EXQT`
       const response = await fetch(url);
       const data = await response.json() as BasescanResponse;
-      transactions.push(...data.result);
+      
+      if(data.result == null){
+        hasMore = false;
+      }else{
+        transactions.push(...data.result);
+      }
       if (data.result.length < offset) {
         hasMore = false;
       } else {
