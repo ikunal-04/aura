@@ -27,6 +27,7 @@ function RetroAuraWebsite() {
   const completionAudioRef = useRef<HTMLAudioElement | null>(null)
   const [isPlayingLoadingSound, setIsPlayingLoadingSound] = useState<boolean>(false)
   const audioPromiseRef = useRef<Promise<void> | null>(null)
+  
 
   // Initialize audio on component mount
   useEffect(() => {
@@ -223,7 +224,8 @@ function RetroAuraWebsite() {
                     value={inputValue}
                     onChange={handleInputChange}
                     placeholder="What's your current vibe?"
-                    className="w-full border-2 border-purple-400/50 bg-[#16213e] px-3 py-2 text-white placeholder-gray-500 focus:border-purple-500 focus:ring-0"
+                    className="w-full border-2 border-purple-400/50 bg-[#16213e] p-6 text-white placeholder-gray-500 focus:border-purple-500 focus:ring-0"
+                    id="vibeInput"
                   />
                 </div>
                 <RetroButton type="submit" className="w-full" variant="primary" disabled={isLoading}>
