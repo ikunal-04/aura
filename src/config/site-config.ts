@@ -55,6 +55,7 @@ export const siteConfig: Metadata = {
         "web3 recap",
         "crypto recap",
         "aura",
+        "web3 rewind",
         "ethereum",
         "nft",
         "cryptocurrency",
