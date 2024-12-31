@@ -7,6 +7,7 @@ import { BrowserWindow } from '@/components/BrowserWindow'
 import { RetroButton } from '@/components/RetroButton'
 import ConnectWallett from '@/components/ConnectWallet'
 import { Footer } from '@/components/Footer'
+import { Analytics } from "@vercel/analytics/react"
 
 export default function LandingPage() {
   const [address, setAddress] = useState<string>('')
