@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/providers";
 import '@coinbase/onchainkit/styles.css';
+import { siteConfig } from "@/config/site-config";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,10 +15,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Onchain-Aura",
-  description: "Discover Your Aura Score based on your onchain journey",
-};
+export const metadata: Metadata = siteConfig;
 
 export default function RootLayout({
   children,
