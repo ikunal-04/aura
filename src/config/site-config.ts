@@ -47,6 +47,13 @@ export const siteConfig: Metadata = {
     },
     keywords: [
         "onchain",
+        "onchain score",
+        "aura onchain",
+        "onchainaura",
+        "auraonchain",
+        "web3 wrapped",
+        "web3 recap",
+        "crypto recap",
         "aura",
         "ethereum",
         "nft",
