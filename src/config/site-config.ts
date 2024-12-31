@@ -21,7 +21,7 @@ export const siteConfig: Metadata = {
         description: DESCRIPTION,
         images: [
             {
-                url: "/favicon.ico",
+                url: "/image.png",
                 width: 1200,
                 height: 630,
                 alt: TITLE,
@@ -39,7 +39,7 @@ export const siteConfig: Metadata = {
         card: 'summary_large_image',
         images: [
             {
-                url: "/favicon.ico",
+                url: "/image.png",
                 width: 1200,
                 height: 630,
             },
