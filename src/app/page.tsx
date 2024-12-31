@@ -33,7 +33,7 @@ export default function LandingPage() {
               Discover Your Aura Score based on your onchain journey
             </p>
           </div>
-          
+          <Analytics/>
           <BrowserWindow title="AURA.CHECKER">
             <div className="bg-[#1a1a2e] p-8">
               <div className="max-w-md mx-auto space-y-6">
